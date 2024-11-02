@@ -7,6 +7,8 @@ schedule
 APscheduler
 # --- For-Database ------------ #
 pymongo
+motor
+umongo
 dnspython
 # --- For-Web-Response ------- #
 aiohttp
