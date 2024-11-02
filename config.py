@@ -6,10 +6,10 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 #Api Id/Api Hash/Owner Id/Owner Username or tag
-APP_ID = int(os.environ.get("APP_ID", "22469064"))
-API_HASH = os.environ.get("API_HASH", "c05481978a217fdb11fa6774b15cba32")
+APP_ID = int(os.environ.get("APP_ID", "24828197"))
+API_HASH = os.environ.get("API_HASH", "d36e278e89ebeb900aeda4128d413a77")
 OWNER_ID = int(os.environ.get("OWNER_ID", "8108281129"))
-OWNER_TAG = os.environ.get("OWNER_TAG", "Alya_x_Yuki")
+OWNER_TAG = os.environ.get("OWNER_TAG", "Yae_X_Miko")
 
 #Channel/Force sub
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002381050327"))
