@@ -3,8 +3,11 @@ from config import ADMINS, DB_URL, DB_NAME
 from asyncio import Lock
 
 # MongoDB client setup
-dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URL)
-database = dbclient[DB_NAME]
+try:
+    dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URL)
+    database = dbclient[DB_NAME]
+except Exception as e:
+    print(f"Database connection error: {e}")
 
 user_data = database['users']
 admin_data = database['admins']
