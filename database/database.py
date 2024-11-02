@@ -3,7 +3,7 @@ from config import ADMINS, DB_URL, DB_NAME
 from asyncio import Lock
 
 # MongoDB client setup
-dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URL)
+dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URL, maxPoolSize=50, minPoolSize=10)
 database = dbclient[DB_NAME]
 
 user_data = database['users']
