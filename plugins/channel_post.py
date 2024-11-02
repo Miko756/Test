@@ -36,32 +36,39 @@ async def channel_post(client: Client, message: Message):
         return 
 
     # Encode the message ID and generate the link
-    converted_id = post_message.id * abs(client.db_channel.id)
-    string = f"get-{converted_id}"
-    
-    try:
-        base64_string = await encode(string)
-    except Exception as e:
-        print(e)
-        await reply_text.edit_text("Error during encoding!")
-        return
-    
-    link = f"https://t.me/{client.username}?start={base64_string}"
+converted_id = post_message.id * abs(client.db_channel.id)
+string = f"get-{converted_id}"
+
+try:
+    base64_string = await encode(string)
+except Exception as e:
+    # Consider using logging instead of print
+    print(f"Encoding error: {e}")  # Log the error for debugging
+    await reply_text.edit_text("Error during encoding!")
+    return
+
+link = f"https://t.me/{client.username}?start={base64_string}"
+
+# Inform the user about the generated link
+await reply_text.edit_text(f"Message successfully posted to the channel!\nHere is your link: {link}")
 
     # Create inline keyboard for sharing the URL
-    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
+reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
 
-    await reply_text.edit(f"<b>Here is your link:</b>\n{link}", reply_markup=reply_markup, disable_web_page_preview=True)
+await reply_text.edit(f"<b>Here is your link:</b>\n{link}", reply_markup=reply_markup, disable_web_page_preview=True)
 
-    if not DISABLE_CHANNEL_BUTTON:
+if not DISABLE_CHANNEL_BUTTON:
+    try:
+        await post_message.edit_reply_markup(reply_markup)
+    except FloodWait as e:
+        await asyncio.sleep(e.x)  # Use e.x to get the wait time
         try:
             await post_message.edit_reply_markup(reply_markup)
-        except FloodWait as e:
-            await asyncio.sleep(e.value)
-            await post_message.edit_reply_markup(reply_markup)
-        except Exception as e:
-            print(e)
-
+        except Exception as inner_e:
+            print(f"Error editing post message markup after flood wait: {inner_e}")  # Consider using logging
+    except Exception as e:
+        print(f"Error editing post message markup: {e}")  # Consider using logging
+      
 @Bot.on_message(filters.channel & filters.incoming & filters.chat(CHANNEL_ID))
 async def new_post(client: Client, message: Message):
     if DISABLE_CHANNEL_BUTTON:
@@ -79,7 +86,7 @@ async def new_post(client: Client, message: Message):
     try:
         base64_string = await encode(string)
     except Exception as e:
-        print(e)
+        print(f"Encoding error: {e}")  # Use logging instead of print in production
         return
     
     link = f"https://t.me/{client.username}?start={base64_string}"
@@ -87,10 +94,14 @@ async def new_post(client: Client, message: Message):
     # Create inline keyboard for sharing the URL
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
 
+    # Attempt to edit the message reply markup
     try:
         await message.edit_reply_markup(reply_markup)
     except FloodWait as e:
-        await asyncio.sleep(e.value)
-        await message.edit_reply_markup(reply_markup)
+        await asyncio.sleep(e.x)  # Use e.x for better clarity
+        try:
+            await message.edit_reply_markup(reply_markup)
+        except Exception as inner_e:
+            print(f"Error editing reply markup after flood wait: {inner_e}")  # Use logging
     except Exception as e:
-        print(e)
+        print(f"Error editing reply markup: {e}")  # Use logging
