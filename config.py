@@ -22,7 +22,7 @@ if FORCE_SUB_CHANNEL > FORCE_SUB_CHANNEL2:
     FORCE_SUB_CHANNEL = temp
 
 #Bot Token/Tg Bot Worker/Port
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7716433955:AAHR3r3qgAIsf7xOmCbAp42VCIkiKljmyxg")
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7716433955:AAFzXYzLXq8gdftXoohSRkkfQNSZOSpL11s")
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 PORT = os.environ.get("PORT", "6666")
 
