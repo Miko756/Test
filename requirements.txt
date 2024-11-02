@@ -10,6 +10,7 @@ pymongo
 motor
 umongo
 dnspython
+marshmallow
 # --- For-Web-Response ------- #
 aiohttp
 python-dotenv
