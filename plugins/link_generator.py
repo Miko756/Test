@@ -3,6 +3,16 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from bot import Bot
 from config import ADMINS
 from helper_func import encode, get_message_id
+import aiofiles
+
+async def read_file(file_path: str) -> bytes:
+    async with aiofiles.open(file_path, 'rb') as file:
+        return await file.read()
+
+async def send_file_to_user(user, file_path: str):
+    file_content = await read_file(file_path)
+    await user.send(file_content)
+
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('batch'))
 async def batch(client: Client, message: Message):
