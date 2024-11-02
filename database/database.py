@@ -51,20 +51,32 @@ async def present_hash(hash: str):
     found = await link_data.find_one({"hash": hash})
     return bool(found)
 
+from typing import Optional
+
 # Function to increment the click count for a hash
-async def inc_count(hash: str):
-    data = await link_data.find_one({'hash': hash})
-    if data is None:
-        return  # Handle case where the hash is not found
-    clicks = data.get('clicks', 0)
-    await link_data.update_one({'hash': hash}, {'$inc': {'clicks': 1}})
+async def inc_count(hash: str) -> None:
+    try:
+        data: Optional[dict] = await link_data.find_one({'hash': hash})
+        if data is None:
+            return  # Handle case where the hash is not found
+        await link_data.update_one({'hash': hash}, {'$inc': {'clicks': 1}})
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        
+
+from typing import Optional
 
 # Function to get the number of clicks for a hash
-async def get_clicks(hash: str):
-    data = await link_data.find_one({'hash': hash})
-    if data is None:
-        return 0  # Return 0 if the hash is not found
-    return data.get('clicks', 0)
+async def get_clicks(hash: str) -> int:
+    try:
+        data: Optional[dict] = await link_data.find_one({'hash': hash})
+        if data is None:
+            return 0  # Return 0 if the hash is not found
+        return data.get('clicks', 0)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return 0
+
 
 # Users
 
