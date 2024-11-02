@@ -9,6 +9,7 @@ motor
 umongo
 marshmallow
 dnspython
+https://github.com/Tinche/aiofiles
 # --- For-Web-Response ------- #
 pytz
 requests
