@@ -515,7 +515,7 @@ if USE_PAYMENT:
             except Exception as e:
                 print(e)
                 return
-            if not int(timeforprem.text) in [1, 2, 3, 4, 5]:
+            if not int(timeforprem.text) in []:
                 await message.reply("You have given wrong input. 😖")
                 continue
             else:
