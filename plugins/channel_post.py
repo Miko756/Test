@@ -7,7 +7,11 @@ from bot import Bot
 from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON, USER_REPLY_TEXT
 from helper_func import encode
 
-@Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start','users','broadcast','batch','genlink','stats','auth_secret','deauth_secret', 'auth', 'sbatch', 'exit', 'add_admin', 'del_admin', 'admins', 'add_prem', 'ping', 'restart', 'ch2l', 'cancel']))
+@Bot.on_message(filters.private & filters.user(ADMINS) & 
+                ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 
+                                  'stats', 'auth_secret', 'deauth_secret', 'auth', 
+                                  'sbatch', 'exit', 'add_admin', 'del_admin', 
+                                  'admins', 'add_prem', 'ping', 'restart', 'ch2l', 'cancel']))
 async def channel_post(client: Client, message: Message):
     # Ensure client.db_channel is initialized
     if not hasattr(client, 'db_channel') or not hasattr(client.db_channel, 'id'):
@@ -15,17 +19,21 @@ async def channel_post(client: Client, message: Message):
         return
     
     reply_text = await message.reply_text("Please Wait...! 🫷", quote=True)
+
     try:
-        # Try to copy the message to the channel
+        # Attempt to copy the message to the channel
         post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
+        # Optionally notify the user of success
+        await reply_text.edit_text("Message successfully posted to the channel!")
     except FloodWait as e:
         # Handle Telegram's flood limit
-        await asyncio.sleep(e.value)
+        await asyncio.sleep(e.x)  # Use e.x to get the wait time
         post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
+        await reply_text.edit_text("Message successfully posted to the channel after waiting!")
     except Exception as e:
-        print(e)
+        print(e)  # Consider using logging instead
         await reply_text.edit_text("Something went wrong!")
-        return
+        return 
 
     # Encode the message ID and generate the link
     converted_id = post_message.id * abs(client.db_channel.id)
