@@ -1,52 +1,18 @@
-import asyncio
 import motor.motor_asyncio
-from time import time
-from config import DB_URL, DB_NAME
-
-# Concurrency control
-semaphore = asyncio.Semaphore(10)
-
-
-
-# Rate limiting tracker
-user_requests = {}
+from config import ADMINS, DB_URL, DB_NAME
+from asyncio import Lock
 
 # MongoDB client setup
-try:
-    dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URL)
-    database = dbclient[DB_NAME]
-except Exception as e:
-    print(f"Database connection error: {e}")
+dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URL)
+database = dbclient[DB_NAME]
 
 user_data = database['users']
 admin_data = database['admins']
 link_data = database['links']
 
-async def rate_limit(user_id, limit_time=60):
-    now = time()
-    if user_id not in user_requests or now - user_requests[user_id] > limit_time:
-        user_requests[user_id] = now
-        return True
-    return False
+# Lock for thread-safe operations on ADMINS list
+admins_lock = Lock()
 
-async def handle_file_request(user_id, hash):
-    # Rate limiting check
-    if not await rate_limit(user_id):
-        return "Rate limit exceeded. Please try again later."
-
-    # Concurrency control
-    async with semaphore:
-        await inc_count(hash)  # Increment click count safely
-        # Fetch or generate file link
-        return await get_file_link(hash)  # Function to retrieve the file link
-
-# Example function to increment click count for a file
-async def inc_count(hash: str):
-    data = await link_data.find_one({'hash': hash})
-    if data is None:
-        return
-    await link_data.update_one({'hash': hash}, {'$inc': {'clicks': 1}})
-    
 # Default verification status
 default_verify = {
     'is_verified': False,
