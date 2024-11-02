@@ -11,9 +11,15 @@ semaphore = asyncio.Semaphore(10)
 # Rate limiting tracker
 user_requests = {}
 
-# MongoDB setup with connection pooling
-dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URL, maxPoolSize=50, socketTimeoutMS=30000)
-database = dbclient[DB_NAME]
+# MongoDB client setup
+try:
+    dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URL)
+    database = dbclient[DB_NAME]
+except Exception as e:
+    print(f"Database connection error: {e}")
+
+user_data = database['users']
+admin_data = database['admins']
 link_data = database['links']
 
 async def rate_limit(user_id, limit_time=60):
@@ -41,16 +47,6 @@ async def inc_count(hash: str):
         return
     await link_data.update_one({'hash': hash}, {'$inc': {'clicks': 1}})
     
-# MongoDB client setup
-try:
-    dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URL)
-    database = dbclient[DB_NAME]
-except Exception as e:
-    print(f"Database connection error: {e}")
-
-user_data = database['users']
-admin_data = database['admins']
-link_data = database['links']
 
 # Lock for thread-safe operations on ADMINS list
 admins_lock = Lock()
