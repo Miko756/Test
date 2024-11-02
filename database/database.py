@@ -47,10 +47,6 @@ async def inc_count(hash: str):
         return
     await link_data.update_one({'hash': hash}, {'$inc': {'clicks': 1}})
     
-
-# Lock for thread-safe operations on ADMINS list
-admins_lock = Lock()
-
 # Default verification status
 default_verify = {
     'is_verified': False,
