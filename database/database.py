@@ -1,4 +1,3 @@
-
 import motor.motor_asyncio
 from config import ADMINS, DB_URL, DB_NAME
 
@@ -40,20 +39,19 @@ async def gen_new_count(hash: str):
     return
 
 async def present_hash(hash:str):
-    found = await(link_data.find_one({"hash" : hash}))
+    found = await link_data.find_one({"hash" : hash})
     return bool(found)
 
 async def inc_count(hash: str):
     data = await link_data.find_one({'hash': hash})
     clicks = data.get('clicks')
-    await link_data.update_one({'hash': hash}, {'$set': {'clicks': clicks+1}})
+    await link_data.update_one({'hash': hash}, {'$set': {'clicks': clicks + 1}})
     return
 
 async def get_clicks(hash: str):
     data = await link_data.find_one({'hash': hash})
     clicks = data.get('clicks')
     return clicks
-
 
 #users
 async def present_user(user_id: int):
@@ -84,24 +82,42 @@ async def del_user(user_id: int):
     return
 
 #admins
-
 async def present_admin(user_id: int):
     found = await admin_data.find_one({'_id': user_id})
     return bool(found)
 
-
 async def add_admin(user_id: int):
-    user = new_user(user_id)
-    await admin_data.insert_one(user)
-    ADMINS.append(int(user_id))
+    try:
+        user_id = int(user_id)
+        user = new_user(user_id)
+        await admin_data.insert_one(user)
+        ADMINS.append(user_id)
+    except ValueError:
+        # Handle invalid user_id if necessary
+        pass
     return
 
 async def del_admin(user_id: int):
-    await admin_data.delete_one({'_id': user_id})
-    ADMINS.remove(int(user_id))
+    try:
+        user_id = int(user_id)
+        await admin_data.delete_one({'_id': user_id})
+        ADMINS.remove(user_id)
+    except ValueError:
+        # Handle invalid user_id if necessary
+        pass
     return
 
 async def full_adminbase():
     user_docs = admin_data.find()
-    user_ids = [int(doc['_id']) async for doc in user_docs]
+    user_ids = []
+    async for doc in user_docs:
+        try:
+            user_id = int(doc['_id'])
+            user_ids.append(user_id)
+        except ValueError:
+            # Handle non-integer IDs if necessary
+            pass
     return user_ids
+
+# Example usage (to be called within an async function or event loop)
+# initadmin = await full_adminbase()
