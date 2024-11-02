@@ -8,7 +8,7 @@ from logging.handlers import RotatingFileHandler
 #Api Id/Api Hash/Owner Id/Owner Username or tag
 APP_ID = int(os.environ.get("APP_ID", "22469064"))
 API_HASH = os.environ.get("API_HASH", "c05481978a217fdb11fa6774b15cba32")
-OWNER_ID = int(os.environ.get("OWNER_ID", "6768137528"))
+OWNER_ID = int(os.environ.get("OWNER_ID", "8108281129"))
 OWNER_TAG = os.environ.get("OWNER_TAG", "Alya_x_Yuki")
 
 #Channel/Force sub
