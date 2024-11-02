@@ -1,6 +1,7 @@
+git+https://github.com/youesky/pyrogram
 # --- For-Bot-Working --------- #
 pyrogram
-pyrofork==2.3.38
+pyrofork
 TgCrypto
 pyromod==1.5
 schedule
